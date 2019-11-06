@@ -6,9 +6,7 @@ The inspiration for the scripts here came from the need to create many elan proj
 
 ## Description of scripts
 
-Scripts either 'folderize' .wav files in a directory (i.e. files are deposited into individual subdirectories), elanize (i.e. create an .eaf project), or both.
-
-In the future, I will include a script for extracting the "transcription" tier to a .txt file.
+Scripts either 'folderize' .wav files in a directory (i.e. files are deposited into individual subdirectories), elanize (i.e. create an .eaf project), or both. There is also a script to extract a single annotation to a text file.
 
 Package dependencies: `tidy` and `soxi`
 
@@ -25,3 +23,7 @@ This script will check the given directory for a .wav file, then it will create 
 This is a script to put files .wav files within a directory into individual  subdirectories that are also named the same way as the files. If there is a .txt file with the same name as the .wav file, it will also be moved to the new subdirectory.
 
 Once the new subdirectory is created and files added, the script will create an elan file with associated with the .wav in its subdirectory. The .eaf file will have one tier and an anotation that occupies the entire durration of the .wav file. If there is a .txt file in the directory with the same name as the .wav file, the script will assume it is transcription and add the contents of the .txt to the annotation.
+
+### eaf_extract_txt.sh
+
+This script iterates through subdirectories, where it is assumed ELAN projects (one or more media files, .eaf adn .pfsx files) are stored. The script assumes there is one annotation on one tier, and extracts the annotation value, then adds it to a .txt file.
