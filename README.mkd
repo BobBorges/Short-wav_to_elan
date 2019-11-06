@@ -4,9 +4,13 @@ This is a set of Bash scripts for automating the creation of ELAN projects from 
 
 ## Description of scripts
 
-Scripts either 'folderize' `.wav` files in a directory (i.e. files are deposited into individual subdirectories named followin the same convention as the file), elanize (i.e. create an `.eaf` project from a `.wav` and `.txt`), or both. There is also a script to extract a single annotation from an `.eaf` file to a `.txt` file.
+Scripts either 'folderize' `.wav` files in a directory (i.e. files are deposited into individual subdirectories named followin the same convention as the file), elanize (i.e. create an `.eaf` project from a `.wav` and `.txt`), or both. There is also a script to create empty `.txt` files with the same name as `.wav` files in a designated (set of) directories, and another to extract a single annotation from an `.eaf` file to a `.txt` file.
 
 Package dependencies required for the scripts that create `.eaf` files: `tidy` and `soxi`
+
+### wav_make_txt.sh
+
+This reads the names of `.wav` files in a designated directory or directories, and creates a `.txt` file with the same name.
 
 ### folderize_wav_files.sh
 
