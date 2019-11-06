@@ -1,6 +1,6 @@
 # Short wav to ELAN scripts
 
-This repo contains Bash scripts for automating the creation of ELAN projects from many shorter `.wav` files and, potentially, corresponding `.txt` files. The inspiration for the scripts here came from the need to create many elan projects from short `.wav` files, mostly containing single words or single utterances.
+This is a set of Bash scripts for automating the creation of ELAN projects from many `.wav` files and, potentially, corresponding `.txt` files. The inspiration for the scripts here came from the need to create many elan projects from short `.wav` files, mostly containing single words or single utterances. These are tailored to short media, where only a single transcription annotation is required.
 
 ## Description of scripts
 
