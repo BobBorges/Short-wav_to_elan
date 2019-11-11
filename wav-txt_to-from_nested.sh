@@ -1,5 +1,72 @@
 #!/bin/bash
-
+#
+# This script will nest or de nest .wav and .txt files from Elan directories 
+# It is assumed that Elan projects are stored according to the following
+# directory structure:
+#
+#        * parent directory
+#            * project_1
+#                • project_1.eaf
+#                * project_1.pfsx
+#                * project_1.txt
+#                * project_1.wav
+#            * project_2
+#                • project_2.eaf
+#                * project_2.pfsx
+#                * project_2.txt
+#                * project_2.wav
+#            * project_3
+#                • project_3.eaf
+#                * project_3.pfsx
+#                * project_3.txt
+#                * project_3.wav
+#
+# The script will (a) extract the .wav and .txt files from typically nested
+# Elan project directory structure to respective un-nested directories, e.g.:
+#
+#        * wav_file_dir
+#            * project_1.wav
+#            * project_2.wav
+#            * project_3.wav
+#
+# and
+#
+#        * txt_file_dir
+#            * project_1.txt
+#            * project_2.txt
+#            * project_3.txt
+#
+# ... or (b) move .wav and .txt files from un-nested structure to typically
+# nested Elan project structure. The (b) option assumes that the typical Elan
+# directory structure already exists and allows the user to define what happens to
+# files that cannot be palced.
+#
+# If tou choose to operate on one directory (Option 1), you must enter an
+# absolute path to that directory. Sommething like:
+#
+#    /home/user/target_directory
+#
+# If you choose to operate on multiple directories, you must provide
+# a .txt file as input. An absolute path should be entered to that file, and
+# its contents should be a line by line list of directories to be operated
+# on by the script, also in the form of absolute paths.
+#
+#    ###########
+#    # LICENSE #
+#    ###########
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+#
 get_1dir_txt_dest(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe destination for your text files."
