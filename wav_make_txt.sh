@@ -30,14 +30,16 @@ TEXTIZE (){
 	done		
 }
 one_dir () {
-	echo "Please enter the directory you want to operate on."
-	echo "HINT: Use an absolute path."	
+    echo -e ""
+	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
+	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
 	read working_dir
 	TEXTIZE
 }
 two_dir () {
-	echo "Please enter a .txt file listing the directories you want to operate on."
-	echo "HINT: Use absoute paths to the file AND in the file."
+    echo -e ""
+	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
+	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
 	read file_list
 	while read line; do
 		working_dir=$line
@@ -68,43 +70,109 @@ help_msg () {
 	echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
 	export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
 }
-echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-echo -e " | --- Welcome to textize! --- |"
-echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-sleep 1
-echo ""
-echo -e "How many directories to you want to operate on?\e[33m"
-echo ""
-sleep 1
+interactive(){
+    echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo -e " | --- Welcome to textize! --- |"
+    echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    sleep 1
+    echo ""
+    echo -e "How many directories to you want to operate on?\e[33m"
+    echo ""
+    sleep 1
 
-COLUMNS=12
-export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
-options=("Work on a single directory" "Work on multiple directories" "Get help" "Quit")
-select opt in "${options[@]}"
-do
-	case $opt in
-		"Work on a single directory")
-			echo "You chose to work on ONE directory."
-			one_dir
-			break		
-			;;
-		"Work on multiple directories")
-			echo "You chose to work on MULTIPLE directories."
-			two_dir
-			break
-			;;
-		"Get help")
-			echo "So, you need help? Here it is:"
-			help_msg
-			;;
-		"Quit")
-			break
-			;;
-		*) 
-			PS3=""
-			echo -e "\e[1mInvalid option!!\e[0m Try again.\e[33m"
-			sleep 1
-			echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
-			export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
-	esac
+    COLUMNS=12
+    export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
+    options=("Work on a single directory" "Work on multiple directories" "Get help" "Quit")
+    select opt in "${options[@]}"
+    do
+	    case $opt in
+		    "Work on a single directory")
+			    echo "You chose to work on ONE directory."
+			    one_dir
+			    break		
+			    ;;
+		    "Work on multiple directories")
+			    echo "You chose to work on MULTIPLE directories."
+			    two_dir
+			    break
+			    ;;
+		    "Get help")
+			    echo "So, you need help? Here it is:"
+			    help_msg
+			    ;;
+		    "Quit")
+			    break
+			    ;;
+		    *) 
+			    PS3=""
+			    echo -e "\e[1mInvalid option!!\e[0m Try again.\e[33m"
+			    sleep 1
+			    echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
+			    export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
+	    esac
+    done
+}
+
+usage(){
+    echo " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo " | --- Welcome to textize! --- |"
+    echo " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo ""
+    echo "Make .txt file for each .wav file."
+    echo ""
+    echo "Usage: ./wav_make_txt.sh -h | -i"
+    echo "Usage: ./wav_make_txt.sh target-directory"
+    echo "Usage: ./wav_make_txt.sh -l target-directories.txt"
+    echo ""
+    echo "Options"
+    echo "  -h | --help             display this message and exit"
+    echo "  -i | --interactive      start program in interactive mode"
+    echo "  -l | --list             pass target directories from .txt file"
+    echo ""
+    echo "HINT: use absolute paths."
+}
+
+file_list=
+working_dir=
+file_list=
+
+while :; do
+    case $1 in
+        -h|--help)
+            usage
+            exit
+            ;;
+        -i|--interactive)
+            interactive
+            exit
+            ;;
+        -l|--list)
+            if [ "$2" ];then
+                file_list=$2
+                shift
+            else
+                echo "-l takes an argument. Please try again."
+                exit
+            fi
+            ;;
+        *)
+            break
+    esac
+    shift
 done
+
+if [[ -f $file_list ]]; then
+    while read line; do
+        working_dir=$line
+        TEXTIZE
+    done < $file_list
+elif [ "$1" ];then
+    working_dir=$1
+    TEXTIZE
+else
+    echo ""
+    echo "~~~ You must supply arguments. ~~~"
+    echo ""
+    usage
+fi
+
