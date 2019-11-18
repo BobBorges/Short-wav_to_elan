@@ -22,17 +22,17 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 FOLDERIZE () {
-    for file in $working_dir/*.wav
+    for file in "${working_dir}"/*.wav
     do
-        if [[ -f $file ]]; then
-        echo "...putting the file --- $file --- into its folder..."
-	    file_bare=${file%.wav}
-	    file_name=${file_bare##*/}
-	    mkdir $working_dir/$file_name
-        sub_dir=$working_dir/$file_name
-        mv $file $sub_dir
+        if [[ -f "${file}" ]]; then
+            echo "...putting the file --- "${file}" --- into its folder..."
+	        file_bare=${file%.wav}
+	        file_name=${file_bare##*/}
+	        mkdir "${working_dir}"/$file_name
+            sub_dir="${working_dir}/$file_name"
+            mv "${file}" "${sub_dir}"
             if [[ -f "$file_bare.txt" ]]; then
-                mv "$file_bare.txt" $sub_dir
+                mv "$file_bare.txt" "${sub_dir}"
             fi
         fi
     done
@@ -43,19 +43,19 @@ FOLDERIZE () {
 one_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
+	echo -e "\e[0m"	
 	read working_dir
 	FOLDERIZE
 }
 two_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
-	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
+	echo -e "\e[0m"
 	read file_list
 	while read line; do
-		working_dir=$line
+		working_dir="${line}"
 		FOLDERIZE	
-	done < $file_list
+	done < "${file_list}"
 }
 help_msg () {
     echo -e "\e[33mThis is a script to put files .wav files within a directory into individual"
@@ -63,8 +63,9 @@ help_msg () {
     echo -e ".txt file with the same name as the .wav file, it will also be moved to the"
         echo -e "new subdirectory."
 	echo -e ""
-	echo -e "If tou choose to operate on one directory (Option 1), you must enter an"
-	echo -e "absolute path to that directory. Sommething like:\e[0m"
+	echo -e "If tou choose to operate on one directory (Option 1), you must enter a path"
+	echo -e "to that directory. Relative paths are relative to the location where the script was"
+    echo -e "initiatied. If that sounds complicated, use an absolute path Sommething like:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/target_directory"
 	echo -e ""
@@ -143,7 +144,6 @@ usage(){
     echo "  -i | --interactive      start program in interactive mode"
     echo "  -l | --list             pass target directories from .txt file"
     echo ""
-    echo "HINT: use absolute paths."
 }
 
 file_list=
@@ -161,8 +161,8 @@ while :; do
             exit
             ;;
         -l|--list)
-            if [ "$2" ];then
-                file_list=$2
+            if [ "${2}" ];then
+                file_list="${2}"
                 shift
             else
                 echo "-l takes an argument. Please try again."
@@ -175,13 +175,13 @@ while :; do
     shift
 done
 
-if [[ -f $file_list ]]; then
+if [[ -f "${file_list}" ]]; then
     while read line; do
         working_dir=$line
         FOLDERIZE
-    done < $file_list
-elif [ "$1" ];then
-    working_dir=$1
+    done < "${file_list}"
+elif [ "${1}" ];then
+    working_dir="${1}"
     FOLDERIZE
 else
     echo ""
