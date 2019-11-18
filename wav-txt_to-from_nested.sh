@@ -337,47 +337,171 @@ help_msg(){
 	export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
 }
 
-echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-echo -e " | --- Welcome to move wav & txt to or from nested directories! --- |"
-echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-sleep 1
-echo ""
-echo -e "Do you want to move wav and txt files to or from a nested directory structure?"
-echo -e "\e[34mHINT: You will be able to choose individual source / destination directories"
-echo -e "      for non-nested txt and wav files.\e[33m"
-echo ""
-sleep 1
-COLUMNS=12
-export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
-options=("Move files from a nested directory structure to a non-nested directory structure" "Move files from a non-nested directory structure to a nested directory structure" "Get help" "Quit")
-select opt in "${options[@]}"
-do
-	case $opt in
-		"Move files from a nested directory structure to a non-nested directory structure")
-			echo ""
-			echo "You chose to move files to a single directory."
-			mv_to_1dir
-			break		
-			;;
-		"Move files from a non-nested directory structure to a nested directory structure")
-			echo ""
-			echo "You chose to move files to a nested directory structure."
-			mv_to_nested
-			break
-			;;
-		"Get help")
-			echo ""
-			echo "So, you need help? Here it is:"
-			help_msg
-			;;
-		"Quit")
-			break
-			;;
-		*) 
-			PS3=""
-			echo -e "\e[1mInvalid option!!\e[0m Try again.\e[33m"
-			sleep 1
-			echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
-			export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
-	esac
+interactive(){
+    echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo -e " | --- Welcome to move wav & txt to or from nested directories! --- |"
+    echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    sleep 1
+    echo ""
+    echo -e "Do you want to move wav and txt files to or from a nested directory structure?"
+    echo -e "\e[34mHINT: You will be able to choose individual source / destination directories"
+    echo -e "      for non-nested txt and wav files.\e[33m"
+    echo ""
+    sleep 1
+    COLUMNS=12
+    export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
+    options=("Move files from a nested directory structure to a non-nested directory structure" "Move files from a non-nested directory structure to a nested directory structure" "Get help" "Quit")
+    select opt in "${options[@]}"
+    do
+	    case $opt in
+		    "Move files from a nested directory structure to a non-nested directory structure")
+			    echo ""
+			    echo "You chose to move files to a single directory."
+			    mv_to_1dir
+			    break		
+			    ;;
+		    "Move files from a non-nested directory structure to a nested directory structure")
+			    echo ""
+			    echo "You chose to move files to a nested directory structure."
+			    mv_to_nested
+			    break
+			    ;;
+		    "Get help")
+			    echo ""
+			    echo "So, you need help? Here it is:"
+			    help_msg
+			    ;;
+		    "Quit")
+			    break
+			    ;;
+		    *) 
+			    PS3=""
+			    echo -e "\e[1mInvalid option!!\e[0m Try again.\e[33m"
+			    sleep 1
+			    echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
+			    export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
+	    esac
+    done
+}
+usage(){
+    echo " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo " | --- Welcome to move wav & txt to or from nested directories! --- |"
+    echo " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo ""
+    echo "Nest or de-nest .wav and .txt files"
+    echo ""
+    echo "Usage: ./wav-txt_to-from_nested.sh -h | -i"
+    echo "Usage: ./wav-txt_to-from_nested.sh -n nested-destination wav-source txt-source [stray-files-destination]"
+    echo "Usage: ./wav-txt_to-from_nested.sh -n -l nested-destination-list.txt wav-source txt-source [stray-files-destination]"
+    echo "Usage: ./wav-txt_to-from_nested.sh -d nested-source wav-destination txt-destination"
+    echo "Usage: ./wav-txt_to-from_nested.sh -d -l nested-source-list.txt wav-destination txt-destination"
+    echo ""
+    echo "Options"
+    echo "  -h | --help             display this message and exit"
+    echo "  -i | --interactive      start program in interactive mode"
+    echo "  -n | --nest             nest"
+    echo "  -d | --de-nest          de-nest"
+    echo "  -l | --list             pass nested directories from .txt file"
+    echo ""
+    echo "HINT: use absolute paths."
+}
+operation=
+other_args=()
+onedir_txt_src=
+onedir_wav_src=
+parent_dest_dir=
+parent_dest_dir_list=
+stray_files_dest=
+working_src_dir=
+working_src_dir_list=
+onedir_txt_dest=
+onedir_wav_dest=
+
+for arg in "$@"; do
+    case $arg in
+        -h|--help)
+            usage
+            exit
+            ;;
+        -i|--interactive)
+            interactive
+            exit
+            ;;
+        -d|--de-nest)
+            operation="denest"
+            shift
+            ;;
+        -n|--nest)
+            operation="nest"
+            shift
+            ;;
+        -l|--list)
+            if [ $operation == "nest" ] && [[ -f $2 ]];then
+                parent_dest_dir_list=$2
+            elif [ $operation == "denest" ] && [[ -f $2 ]];then
+                working_src_dir_list=$2 
+            else
+                echo "-l takes a file argument. Please try again"
+            fi
+            shift
+            shift
+            ;;
+        *)
+            other_args+=("$1")
+            shift
+            ;;
+    esac
 done
+
+if (( ${#other_args[@]} >= 2 )) ;then
+    if [ "$operation" ]; then
+        echo "$operation"
+        if [ $operation == "nest" ]; then
+            echo ${other_args[*]}
+            if [ "$parent_dest_dir_list" ]; then
+                onedir_wav_src=${other_args[1]}
+                onedir_txt_src=${other_args[2]}
+                if [ "${other_args[3]}" ]; then
+                    stray_files_dest=${other_args[3]}
+                fi
+                while read line; do
+                    mv_from_1dir $line
+                done < $parent_dest_dir_list
+                address_stray_files
+            else
+    #            parent_dest_dir=${other_args[1]}
+                onedir_txt_src=${other_args[2]}
+                onedir_wav_src=${other_args[3]}
+                if [ "${other_args[4]}" ]; then
+                    stray_files_dest=${other_args[4]}
+                fi
+                mv_from_1dir ${other_args[1]}
+                address_stray_files
+            fi
+        else # denest
+            echo ${other_args[*]}
+            if [ "$working_src_dir_list=" ]; then
+                onedir_wav_dest=${other_args[1]}
+                onedir_txt_dest=${other_args[2]}
+                while read line; do
+                    mv_from_nested $line
+                done < $working_src_dir_list
+            else        
+    #            working_src_dir=${other_args[1]}
+                onedir_wav_dest=${other_args[2]}
+                onedir_txt_dest=${other_args[3]}
+                mv_from_nested ${other_args[1]}
+            fi
+        fi
+    else
+        echo ""
+        echo "You need to decide what operation: -d | -n. Please try again."
+        echo ""
+        usage
+    fi
+else
+    echo ""
+    echo " You haven't supplied a suitable number of arguments. Please try again."
+    echo ""
+    usage
+fi
