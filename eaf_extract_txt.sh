@@ -22,16 +22,17 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 EXTRACT_TXT(){
-for d in $working_dir/*/ ;do
-	proj=$(basename $d)
+for d in "${working_dir}"/*/ ;do
+	proj=$(basename "${d}")
 	eaf="$proj/$proj.eaf" 
-	eaf_abs="$working_dir/$eaf"
+	eaf_abs="${working_dir}/$eaf"
 	echo "... extracting transcription from --- $eaf --- ..."	
-	if [[ -f $eaf_abs ]]; then
-		transcription=$( awk -F'[<>]' '/<ANNOTATION_VALUE>/{print $3;}' $eaf_abs)
+	if [[ -f "${eaf_abs}" ]]; then
+		transcription=$( awk -F'[<>]' '/<ANNOTATION_VALUE>/{print $3;}' "${eaf_abs}")
+        echo $transcription
 		echo "... ... to --- $proj/$proj.txt --- ..."		
-		touch "$working_dir/$proj/$proj.txt"
-		echo $transcription > "$working_dir/$proj/$proj.txt"
+		touch "${working_dir}/$proj/$proj.txt"
+		echo $transcription > "${working_dir}/$proj/$proj.txt"
 	fi	
 done
 echo "~~~~"
@@ -41,19 +42,19 @@ echo "~~~~"
 one_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
+	echo -e ".\e[0m"	
 	read working_dir
 	EXTRACT_TXT
 }
 two_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
-	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
+	echo -e "\e[0m"
 	read file_list
 	while read line; do
-		working_dir=$line
+		working_dir="${line}"
 		EXTRACT_TXT	
-	done < $file_list
+	done < "${file_list}"
 }
 help_msg(){
 	echo -e "\e[33mThis is a script to pull transcription from an .eaf file and add it to"
@@ -62,14 +63,14 @@ help_msg(){
 	echo -e "from nested projects in the root directory or directories passed to the script."
 	echo -e ""
 	echo -e "If you choose to operate on one directory (Option 1), you must enter an"
-	echo -e "absolute path to that directory. Sommething like:\e[0m"
+	echo -e "path to that directory. Sommething like:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/target_directory"
 	echo -e ""
 	echo -e "\e[33mIf you choose to operate on multiple directories, you must provide"
-	echo -e "a .txt file as input. An absolute path should be entered to that file, and"
+	echo -e "a .txt file as input. A path should be entered to that file, and"
 	echo -e "its contents should be a line by line list of directories to be operated"
-	echo -e "on by the script, also in the form of absolute paths."
+	echo -e "on by the script."
 	echo -e ""
 	echo -e "OK?"
 	echo -e ""
@@ -139,7 +140,6 @@ usage(){
     echo "  -i | --interactive      start program in interactive mode"
     echo "  -l | --list             pass target directories from .txt file"
     echo ""
-    echo "HINT: use absolute paths."
 }
 
 file_list=
@@ -157,8 +157,8 @@ while :; do
             exit
             ;;
         -l|--list)
-            if [ "$2" ];then
-                file_list=$2
+            if [ "${2}" ];then
+                file_list="${2}"
                 shift
             else
                 echo "-l takes an argument. Please try again."
@@ -171,13 +171,13 @@ while :; do
     shift
 done
 
-if [[ -f $file_list ]]; then
+if [[ -f "${file_list}" ]]; then
     while read line; do
-        working_dir=$line
+        working_dir="${line}"
         EXTRACT_TXT
-    done < $file_list
-elif [ "$1" ];then
-    working_dir=$1
+    done < "${file_list}"
+elif [ "${1}" ];then
+    working_dir="${1}"
     EXTRACT_TXT
 else
     echo ""
