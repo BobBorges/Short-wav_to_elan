@@ -6,13 +6,13 @@
 #echo dest_dir
 
 POPULATE_TXT(){
-	dest_files=$(ls -I transcriptions.txt $dest_dir | grep .txt)
-	dest_files_arr=($dest_files)
-	line_idx=0
+	dest_files=$(ls -I transcriptions.txt "${dest_dir}" | grep .txt)
+ 	dest_files_arr=($dest_files)
+ 	line_idx=0
 	while read line; do
-		echo $line > "$dest_dir/${dest_files_arr[$line_idx]}"
+		echo "${line}" > "${dest_dir}"/"${dest_files_arr[$line_idx]}"
 		(( line_idx++ )) 
-	done < $source_file
+	done < "${source_file}"
 echo "~~~~"
 echo "DONE"
 echo "~~~~"
@@ -23,7 +23,7 @@ one_dir(){
 	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
 	read dest_dir
 	echo -e "\e[91mPlease \e[5menter \e[25ma source file with transcriptions."
-	echo -e "\e[34mHINT: Use an absolute path to the file.\e[0m"
+	echo -e "\e[0m"
 	read source_file	
 	POPULATE_TXT
 }
@@ -33,7 +33,7 @@ echo -e ""
 	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
 	read file_list
 	echo -e "\e[91mPlease \e[5menter \e[25ma source file with transcriptions."
-	echo -e "\e[34mHINT: Use an absolute path to the file.\e[0m"
+	echo -e "\e[0m"
 	read source_file	
 	while read line; do
 		dest_dir=$line
@@ -48,14 +48,15 @@ help_msg(){
 	echo -e "the assumption that the order of lines in the transcritions file is exactly"
 	echo -e "the same as the files in the destination directory."
 	echo -e ""
-	echo -e "You must enter an absolute path to the destination directory AND to the"
-	echo -e "transcriptions.txt file. Such as:\e[0m"
+	echo -e "You must enter a path to the destination directory AND to thetranscriptions.txt file."
+	echo -e "The path should be relative to the location where the script was initiated, or an"
+    echo -e " absolute path Such as:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/destination_dir"
 	echo -e "    /home/user/destination_dir/transcriptions.txt"
 	echo -e ""
-	echo -e "\e[33mThe transcriptions file need not be in the destination directory,"
-	echo -e "but if it is, it MUST be named transcriptions.txt."
+	echo -e "\e[33mThe transcriptions file need not be in the destination directory, but if it"
+	echo -e "is, it MUST be named transcriptions.txt."
 	echo -e ""
 	echo -e "Got it?"
 	echo -e ""
@@ -117,8 +118,6 @@ usage(){
     echo "Options"
     echo "  -h | --help             display this message and exit"
     echo "  -i | --interactive      start program in interactive mode"
-    echo ""
-    echo "HINT: use absolute paths."
 }
 
 dest_dir=
@@ -140,9 +139,9 @@ while :; do
     shift
 done
 
-if [[ -f $2 ]]; then
-	dest_dir=$1
-	source_file=$2
+if [[ -f "${2}" ]]; then
+	dest_dir="${1}"
+	source_file="${2}"
 	POPULATE_TXT
 else
     echo ""
