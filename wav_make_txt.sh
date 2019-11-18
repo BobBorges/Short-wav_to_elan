@@ -20,12 +20,12 @@
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #
 TEXTIZE (){
-	for file in $working_dir/*.wav
+	for file in "${working_dir}"/*.wav
 	do
 		if [[ -f $file ]]; then
-		file_bare=${file%.wav}
-		file_name=${file_bare##*/}
-		touch "$working_dir/$file_name.txt"
+		file_bare="${file%.wav}"
+		file_name="${file_bare##*/}"
+		touch "${working_dir}"/$file_name.txt
 		fi
 	done		
 }
@@ -42,21 +42,22 @@ two_dir () {
 	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
 	read file_list
 	while read line; do
-		working_dir=$line
+		working_dir="${line}"
 		TEXTIZE	
-	done < $file_list
+	done < "${file_list}"
 }
 help_msg () {
 	echo -e "\e[33mThis reads the names of .wav files in a designated directory or directories,"
 	echo -e "and creates a .txt file with the same name."
 	echo -e ""
-	echo -e "If tou choose to operate on one directory (Option 1), you must enter an"
-	echo -e "absolute path to that directory. Sommething like:\e[0m"
+	echo -e "If tou choose to operate on one directory (Option 1), you must enter a path"
+	echo -e " to that directory. Either use a path relative to the current location, or an" 
+    echo -e "absolute path. Sommething like:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/target_directory"
 	echo -e ""
 	echo -e "\e[33mIf you choose to operate on multiple directories, you must provide"
-	echo -e "a .txt file as input. An absolute path should be entered to that fiel, and"
+	echo -e "a .txt file as input. A path should be entered to that file, and"
 	echo -e "its contents should be a line by line list of directories to be operated"
 	echo -e "on by the script."
 	echo -e ""
@@ -129,7 +130,6 @@ usage(){
     echo "  -i | --interactive      start program in interactive mode"
     echo "  -l | --list             pass target directories from .txt file"
     echo ""
-    echo "HINT: use absolute paths."
 }
 
 file_list=
@@ -147,8 +147,8 @@ while :; do
             exit
             ;;
         -l|--list)
-            if [ "$2" ];then
-                file_list=$2
+            if [ "${2}" ];then
+                file_list="${2}"
                 shift
             else
                 echo "-l takes an argument. Please try again."
@@ -161,13 +161,13 @@ while :; do
     shift
 done
 
-if [[ -f $file_list ]]; then
+if [[ -f "${file_list}" ]]; then
     while read line; do
-        working_dir=$line
+        working_dir="${line}"
         TEXTIZE
-    done < $file_list
+    done < "${file_list}"
 elif [ "$1" ];then
-    working_dir=$1
+    working_dir="${1}"
     TEXTIZE
 else
     echo ""
