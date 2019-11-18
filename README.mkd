@@ -30,7 +30,7 @@ If you get a permissions error, you probably need to make the script executable.
 
 e.g.
 
-        chmod +x wav_make_txt.sh
+        chmod +x wav_make_txt.sh -h
 
 Then run the script again. The `-h` shows the command-line usage summary, but each program can also be started in interactive mode with `-i`, which will prompt the user to enter necessary information to allow the main function to successfully complete.
 
