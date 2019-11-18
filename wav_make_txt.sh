@@ -32,14 +32,14 @@ TEXTIZE (){
 one_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
+	echo -e "\e[0m"	
 	read working_dir
 	TEXTIZE
 }
 two_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
-	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
+	echo -e "\e[0m"
 	read file_list
 	while read line; do
 		working_dir="${line}"
@@ -51,7 +51,7 @@ help_msg () {
 	echo -e "and creates a .txt file with the same name."
 	echo -e ""
 	echo -e "If tou choose to operate on one directory (Option 1), you must enter a path"
-	echo -e " to that directory. Either use a path relative to the current location, or an" 
+	echo -e "to that directory. Either use a path relative to the current location, or an" 
     echo -e "absolute path. Sommething like:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/target_directory"
