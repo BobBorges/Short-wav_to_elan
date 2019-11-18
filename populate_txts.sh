@@ -10,7 +10,7 @@ POPULATE_TXT(){
 	dest_files_arr=($dest_files)
 	line_idx=0
 	while read line; do
-		echo $line >> "$dest_dir/${dest_files_arr[$line_idx]}"
+		echo $line > "$dest_dir/${dest_files_arr[$line_idx]}"
 		(( line_idx++ )) 
 	done < $source_file
 echo "~~~~"
@@ -41,15 +41,39 @@ echo -e ""
 	done < $file_list
 }
 help_msg(){
-	echo -e "\e[33m HEEEELLLPPP!!!"
+	echo -e "\e[33mThis is a script to read lines in a text file (transcriptions.txt) and write"
+	echo -e "the line to to a separate txt file in a specified directory. There is no"
+	echo -e "specific checking of the file names in the destination directory or the"
+	echo -e "lines of text in the transcriptions file. The script operates entirely on"
+	echo -e "the assumption that the order of lines in the transcritions file is exactly"
+	echo -e "the same as the files in the destination directory."
+	echo -e ""
+	echo -e "You must enter an absolute path to the destination directory AND to the"
+	echo -e "transcriptions.txt file. Such as:\e[0m"
+	echo -e ""
+	echo -e "    /home/user/destination_dir"
+	echo -e "    /home/user/destination_dir/transcriptions.txt"
+	echo -e ""
+	echo -e "\e[33mThe transcriptions file need not be in the destination directory,"
+	echo -e "but if it is, it MUST be named transcriptions.txt."
+	echo -e ""
+	echo -e "Got it?"
+	echo -e ""
+	sleep 1
+	echo -e "\e[31mNow repeating the options:"
+	echo -e "\e[33m"
+	PS3=""
+	sleep 1
+	echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
+	export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
 }
 interactive(){
-    echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-    echo -e " | --- Welcome to populate txt! --- |"
-    echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo -e " | --- Welcome to populate txts! --- |"
+    echo -e " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
     sleep 1
     echo ""
-    echo -e "You can only populate txt in a single directory\e[33m"
+    echo -e "You can only populate txts in a single directory\e[33m"
     echo ""
     sleep 1
 
@@ -81,9 +105,9 @@ interactive(){
     done
 }
 usage(){
-    echo "    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
-    echo "    | --- Welcome to populate txt! --- |"
-    echo "    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo "    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
+    echo "    | --- Welcome to populate txts! --- |"
+    echo "    |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
     echo ""
     echo "Populate text files in a directory from a transcription file."
     echo ""
