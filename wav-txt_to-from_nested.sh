@@ -457,40 +457,48 @@ if (( ${#other_args[@]} >= 2 )) ;then
     if [ "$operation" ]; then
         echo "$operation"
         if [ $operation == "nest" ]; then
-            echo ${other_args[*]}
+#            echo ${other_args[*]}
             if [ "$parent_dest_dir_list" ]; then
-                onedir_wav_src=${other_args[1]}
-                onedir_txt_src=${other_args[2]}
-                if [ "${other_args[3]}" ]; then
-                    stray_files_dest=${other_args[3]}
+                onedir_wav_src=${other_args[0]}
+                onedir_txt_src=${other_args[1]}
+                if [ "${other_args[2]}" ]; then
+                    stray_files_dest=${other_args[2]}
                 fi
                 while read line; do
                     mv_from_1dir $line
                 done < $parent_dest_dir_list
                 address_stray_files
+#                echo "wav_src: $onedir_wav_src"
+ #               echo "txt_src: $onedir_txt_src"
             else
-    #            parent_dest_dir=${other_args[1]}
+                parent_dest_dir=${other_args[0]}
+                onedir_wav_src=${other_args[1]}
                 onedir_txt_src=${other_args[2]}
-                onedir_wav_src=${other_args[3]}
-                if [ "${other_args[4]}" ]; then
-                    stray_files_dest=${other_args[4]}
+                if [ "${other_args[3]}" ]; then
+                    stray_files_dest=${other_args[3]}
                 fi
-                mv_from_1dir ${other_args[1]}
+#                echo "parent: $parent_dest_dir"
+#                echo "wav src: $onedir_wav_src"
+#                echo "txt src: $onedir_txt_src"
+                mv_from_1dir $parent_dest_dir
                 address_stray_files
             fi
         else # denest
-            echo ${other_args[*]}
-            if [ "$working_src_dir_list=" ]; then
-                onedir_wav_dest=${other_args[1]}
-                onedir_txt_dest=${other_args[2]}
+#            echo ${other_args[*]}
+            if [ "$working_src_dir_list" ]; then
+                onedir_wav_dest=${other_args[0]}
+                onedir_txt_dest=${other_args[1]}
                 while read line; do
                     mv_from_nested $line
                 done < $working_src_dir_list
             else        
-    #            working_src_dir=${other_args[1]}
-                onedir_wav_dest=${other_args[2]}
-                onedir_txt_dest=${other_args[3]}
-                mv_from_nested ${other_args[1]}
+                working_src_dir=${other_args[0]}
+                onedir_wav_dest=${other_args[1]}
+                onedir_txt_dest=${other_args[2]}
+#                echo "src: $working_src_dir"
+ #               echo "wav dest: $onedir_wav_dest"
+  #              echo "txt dest: $onedir_txt_dest"
+                mv_from_nested $working_src_dir
             fi
         fi
     else
