@@ -203,8 +203,8 @@ mv_from_nested(){
 		echo "--- moving $txt to $onedir_txt_dest ---"
 		mv "$d/$dir_name.txt" $onedir_txt_dest
 	done
-}
-	
+}	
+
 mv_from_1dir(){
 	shopt -s nullglob
 	for d in $1/*/ ; do				#input parameter $1 will be dest
@@ -236,11 +236,11 @@ address_stray_files(){
 	else
 		shopt -s nullglob
 		for wav in $onedir_wav_src/*.wav; do
-			echo "~~~ Moving $onedir_wav_src/$wav to the stray files directory, $stray_files_dest. ~~~"
+			echo "~~~ Moving $wav to the stray files directory, $stray_files_dest. ~~~"
 			mv $wav $stray_files_dest
 		done
 		for txt in $onedir_txt_src/*.txt; do
-			echo "~~~ Moving $onedir_txt_src/$txt to the stray files directory, $stray_files_dest. ~~~"
+			echo "~~~ Moving $txt to the stray files directory, $stray_files_dest. ~~~"
 			mv $txt $stray_files_dest
 		done
 
@@ -279,37 +279,37 @@ help_msg(){
 	echo -e "\e[33mIt is assumed that Elan projects are stored according to the following" 
 	echo -e "directory structure:"
 	echo -e ""
-	echo -e "        * parent directory"
-	echo -e "            * project_1"
-	echo -e "                • project_1.eaf"
-	echo -e "                * project_1.pfsx"
-	echo -e "                * project_1.txt"
-	echo -e "                * project_1.wav"
-	echo -e "            * project_2"
-	echo -e "                • project_2.eaf"
-	echo -e "                * project_2.pfsx"
-	echo -e "                * project_2.txt"
-	echo -e "                * project_2.wav"
-	echo -e "            * project_3"
-	echo -e "                • project_3.eaf"
-	echo -e "                * project_3.pfsx"
-	echo -e "                * project_3.txt"
-	echo -e "                * project_3.wav"
+	echo -e "        parent directory/"
+	echo -e "            project_1/"
+	echo -e "                project_1.eaf"
+	echo -e "                project_1.pfsx"
+	echo -e "                project_1.txt"
+	echo -e "                project_1.wav"
+	echo -e "            project_2/"
+	echo -e "                project_2.eaf"
+	echo -e "                project_2.pfsx"
+	echo -e "                project_2.txt"
+	echo -e "                project_2.wav"
+	echo -e "            project_3/"
+	echo -e "                project_3.eaf"
+	echo -e "                project_3.pfsx"
+	echo -e "                project_3.txt"
+	echo -e "                project_3.wav"
 	echo -e ""
 	echo -e "The script will (a) extract the .wav and .txt files from typically nested"
 	echo -e "Elan project directory structure to respective un-nested directories, e.g.:"
 	echo -e ""
-	echo -e "        * wav_file_dir"
-	echo -e "            * project_1.wav"
-	echo -e "            * project_2.wav"
-	echo -e "            * project_3.wav"
+	echo -e "        wav_file_dir/"
+	echo -e "            project_1.wav"
+	echo -e "            project_2.wav"
+	echo -e "            project_3.wav"
 	echo -e ""
 	echo -e "and"
 	echo -e ""
-	echo -e "        * txt_file_dir"
-	echo -e "            * project_1.txt"
-	echo -e "            * project_2.txt"
-	echo -e "            * project_3.txt"
+	echo -e "        txt_file_dir/"
+	echo -e "            project_1.txt"
+	echo -e "            project_2.txt"
+	echo -e "            project_3.txt"
 	echo -e ""
 	echo -e "... or (b) move .wav and .txt files from un-nested structure to typically"
 	echo -e "nested Elan project structure. The (b) option assumes that the typical Elan"
@@ -383,6 +383,7 @@ interactive(){
 	    esac
     done
 }
+
 usage(){
     echo " |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
     echo " | --- Welcome to move wav & txt to or from nested directories! --- |"
@@ -405,6 +406,7 @@ usage(){
     echo ""
     echo "HINT: use absolute paths."
 }
+
 operation=
 other_args=()
 onedir_txt_src=
@@ -457,7 +459,6 @@ if (( ${#other_args[@]} >= 2 )) ;then
     if [ "$operation" ]; then
         echo "$operation"
         if [ $operation == "nest" ]; then
-#            echo ${other_args[*]}
             if [ "$parent_dest_dir_list" ]; then
                 onedir_wav_src=${other_args[0]}
                 onedir_txt_src=${other_args[1]}
@@ -468,8 +469,6 @@ if (( ${#other_args[@]} >= 2 )) ;then
                     mv_from_1dir $line
                 done < $parent_dest_dir_list
                 address_stray_files
-#                echo "wav_src: $onedir_wav_src"
- #               echo "txt_src: $onedir_txt_src"
             else
                 parent_dest_dir=${other_args[0]}
                 onedir_wav_src=${other_args[1]}
@@ -477,14 +476,10 @@ if (( ${#other_args[@]} >= 2 )) ;then
                 if [ "${other_args[3]}" ]; then
                     stray_files_dest=${other_args[3]}
                 fi
-#                echo "parent: $parent_dest_dir"
-#                echo "wav src: $onedir_wav_src"
-#                echo "txt src: $onedir_txt_src"
                 mv_from_1dir $parent_dest_dir
                 address_stray_files
             fi
-        else # denest
-#            echo ${other_args[*]}
+        else # de-nest
             if [ "$working_src_dir_list" ]; then
                 onedir_wav_dest=${other_args[0]}
                 onedir_txt_dest=${other_args[1]}
@@ -495,9 +490,6 @@ if (( ${#other_args[@]} >= 2 )) ;then
                 working_src_dir=${other_args[0]}
                 onedir_wav_dest=${other_args[1]}
                 onedir_txt_dest=${other_args[2]}
-#                echo "src: $working_src_dir"
- #               echo "wav dest: $onedir_wav_dest"
-  #              echo "txt dest: $onedir_txt_dest"
                 mv_from_nested $working_src_dir
             fi
         fi
