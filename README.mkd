@@ -3,25 +3,26 @@
 This is a set of Bash scripts for automating work relating to media and text files associated with Elan projects, especially indended for use with many shorter media files. Scripts can:
 
 1. read a list of `.wav` files in a directory and create `.txt` files with the same name;
-2. add `.wav` and `.txt` files from a directory to a set of nested sub directories;
-3. create Elan projects from multiple nested sub-folders like those created in (2) with `.wav` as associated media file and `.txt` as a transcription tier;
-4. complete (2) and (3) in one step;
-5. extract the transcription tier of nested Elan projects to a `.txt` file within the same sub-directory;
-6. nest or de-nest `.wav` and `.txt` files between typically nested elan project directories and collective directories for `.wav` files and `.txt` files.
+2. copy lines from a transctiptions file to individual `.txt` files in a target directory;
+3. add `.wav` and `.txt` files from a directory to a set of nested sub directories;
+4. create Elan projects from nested sub-folders like those created in (2) with `.wav` as associated media file and `.txt` as a transcription tier;
+5. complete (3) and (4) in one step;
+6. extract the transcription tier of nested Elan projects to a `.txt` file within the same sub-directory;
+7. nest or de-nest `.wav` and `.txt` files between typically nested elan project directories and collective directories for `.wav` files and `.txt` files.
 
 
 ## Description of scripts
 
-The scripts are meant to be fairly self explanatory. Once you have identified an operation that you want to perform and your files / directories are in the approproate structure to run the script that perfoms that operation, simply follow these steps:
+Once you have identified an operation that you want to perform and your files / directories are in the approproate structure to run the script that perfoms that operation, simply follow these steps:
 
 * Open terminal
 * Navigate with `cd` to the location of the sctipts
-* run the script (type `./<scriptname>.sh` and press enter)
+* run the script with `-h` to show usage (type `./<scriptname>.sh` and press enter)
 * each script should guide you through what you need to enter to do what you want to do
 
 For example:
 
-        ./wav_make_txt.sh
+        ./wav_make_txt.sh -h
 
 If you get a permissions error, you probably need to make the script executable. 
 
@@ -31,68 +32,175 @@ e.g.
 
         chmod +x wav_make_txt.sh
 
-Then run the script again.
+Then run the script again. The `-h` shows the command-line usage summary, but each program can also be started in interactive mode with `-i`, which will prompt the user to enter necessary information to allow the main function to successfully complete.
 
-All scripts with the exception of (5) can be run using directories listed in a text file as input. This is indicated in the scripts as an option to run the script on multiple directories, but of course a single directory could also be listed in a file and that would work with no problem.
+All scripts with the exception of (2) can be run using directories listed in a text file as input. This is indicated in interactive mode as an option to operate on multiple directories, but of course a single directory could also be listed in a file and that would work with no problem.
 
-The scripts that create `.eaf` files require the following packages yo be installed: `tidy` and `soxi`
+Suggestion: Don't write file lists by hand. Instead use something like:
+
+        touch file_list.txt && ls -d $PWD/*/ >> file_list.txt
+
+The scripts that create `.eaf` files require the following packages yo be installed: `HTML Tidy` and `SoX`
 
 ### 1. wav_make_txt.sh
 
 This reads the names of `.wav` files in a designated directory or directories, and creates a `.txt` file with the same name.
 
-### 2. folderize_wav_files.sh
+        Usage summary:
+
+        Usage: ./wav_make_txt.sh -h | -i
+        Usage: ./wav_make_txt.sh target-directory
+        Usage: ./wav_make_txt.sh -l target-directories.txt
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -l | --list             pass target directories from .txt file
+
+        HINT: use absolute paths.
+
+### 2. populate_txts.sh
+
+This is a script to read lines in a text file (`transcriptions.txt`) and write the line to to a separate `.txt` file in a specified directory. There is no specific checking of the file names in the destination directory or the lines of text in the transcriptions file. The script operates entirely on the assumption that the order of lines in the transcritions file is exactly the same as the files in the destination directory. The transcriptions file need not be in the destination directory, but if it is, it MUST be named `transcriptions.txt`.
+
+        Usage summary:
+
+        Usage: ./populate_txt.sh -h | -i
+        Usage: ./populate_txt.sh target-directory transcription-file.txt
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+
+        HINT: use absolute paths.
+
+
+### 3. folderize_wav_files.sh
 
 This is a script to put `.wav` files within a specified directory or directories into individual subdirectories that are also named the same way as the  original files. If there is a `.txt` file with the same name as the `.wav` file, it will also be moved to the new subdirectory.
 
-### 3. elanize.sh
+        Usage summary:
+
+        Usage: ./folderize_wav_files.sh -h | -i
+        Usage: ./folderize_wav_files.sh target-directory
+        Usage: ./folderize_wav_files.sh -l target-directories.txt
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -l | --list             pass target directories from .txt file
+
+        HINT: use absolute paths.
+
+### 4. elanize.sh
 
 This script will check sub-directories within a specified directory or direcories for a `.wav` file, then it will create an Elan project associated with that `.wav` file in the same sub-directory. The `.eaf` file will have one tier and an anotation that occupies the entire durration of the `.wav` file. If there is a `.txt` file in the directory with the same name as the `.wav` file, the script will assume it is transcription and add the contents of the `.txt` to the annotation.
 
-### 4. folder-and-elanize_wav_files.sh
+        Usage summary:
 
-This script does the job of (2) and (3) in a single run.
+        Usage: ./elanize.sh -h | -i
+        Usage: ./elanize.sh target-directory
+        Usage: ./elanize.sh -l target-directories.txt
 
-### 5. eaf_extract_txt.sh
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -l | --list             pass target directories from .txt file
 
-This script iterates through subdirectories of a specified directory, where it is assumed ELAN projects (one or more media files, `.eaf` and `.pfsx` files) are stored. The script assumes there is one annotation on one tier, and extracts the annotation value, then adds it to a `.txt` file.
+        HINT: use absolute paths.
 
-### 6. wav-txt_to-from_nested.sh
+
+### 5. folder-and-elanize_wav_files.sh
+
+This script does the job of (3) and (4) in a single run.
+
+        Usage summary:
+
+        Usage: ./folder-and-elanize_wav_files.sh -h | -i
+        Usage: ./folder-and-elanize_wav_files.sh target-directory
+        Usage: ./folder-and-elanize_wav_files.sh -l target-directories.txt
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -l | --list             pass target directories from .txt file
+
+        HINT: use absolute paths.
+
+
+### 6. eaf_extract_txt.sh
+
+This script iterates through subdirectories of a specified directory or directories, where it is assumed ELAN projects (one or more media files, `.eaf` and `.pfsx` files) are stored. The script assumes there is one annotation on one tier, and extracts the annotation value, then adds it to a `.txt` file.
+
+
+        Usage summary:
+
+        Usage: ./eaf_extract_txt.sh -h | -i
+        Usage: ./eaf_extract_txt.sh target-directory
+        Usage: ./eaf_extract_txt.sh -l target-directories.txt
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -l | --list             pass target directories from .txt file
+
+        HINT: use absolute paths.
+
+
+### 7. wav-txt_to-from_nested.sh
 
 It is assumed that Elan projects are stored according to the following directory structure:
 
-        * parent directory
-            * project_1
-                • project_1.eaf
-                * project_1.pfsx
-                * project_1.txt
-                * project_1.wav
-            * project_2
-                • project_2.eaf
-                * project_2.pfsx
-                * project_2.txt
-                * project_2.wav
-            * project_3
-                • project_3.eaf
-                * project_3.pfsx
-                * project_3.txt
-                * project_3.wav
+        parent_directory/
+            project_1/
+                project_1.eaf
+                project_1.pfsx
+                project_1.txt
+                project_1.wav
+            project_2/
+                project_2.eaf
+                project_2.pfsx
+                project_2.txt
+                project_2.wav
+            project_3/
+                project_3.eaf
+                project_3.pfsx
+                project_3.txt
+                project_3.wav
 
 The script will (a) extract the `.wav` and `.txt` files from typically nested Elan project directory structure to respective un-nested directories, e.g.:
 
-        * wav_file_dir
-            * project_1.wav
-            * project_2.wav
-            * project_3.wav
+        wav_file_dir/
+            project_1.wav
+            project_2.wav
+            project_3.wav
 
 and
 
-        * txt_file_dir
-            * project_1.txt
-            * project_2.txt
-            * project_3.txt
+        txt_file_dir/
+            project_1.txt
+            project_2.txt
+            project_3.txt
 
 ... or (b) move `.wav` and `.txt` files from un-nested structure to typically nested Elan project structure. The (b) option assumes that the typical Elan directory structure already exists and allows the user to define what happens to files that cannot be palced.
+
+        Usage sumarry:
+
+        Usage: ./wav-txt_to-from_nested.sh -h | -i
+        Usage: ./wav-txt_to-from_nested.sh -n nested-destination wav-source txt-source [stray-files-destination]
+        Usage: ./wav-txt_to-from_nested.sh -n -l nested-destination-list.txt wav-source txt-source [stray-files-destination]
+        Usage: ./wav-txt_to-from_nested.sh -d nested-source wav-destination txt-destination
+        Usage: ./wav-txt_to-from_nested.sh -d -l nested-source-list.txt wav-destination txt-destination
+
+        Options
+          -h | --help             display this message and exit
+          -i | --interactive      start program in interactive mode
+          -n | --nest             nest
+          -d | --de-nest          de-nest
+          -l | --list             pass nested directories from .txt file
+
+        HINT: use absolute paths.
+
 
 
 
