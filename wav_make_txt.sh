@@ -29,6 +29,7 @@ TEXTIZE (){
 		fi
 	done		
 }
+
 one_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
@@ -36,6 +37,7 @@ one_dir () {
 	read working_dir
 	TEXTIZE
 }
+
 two_dir () {
     echo -e ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
@@ -46,6 +48,7 @@ two_dir () {
 		TEXTIZE	
 	done < "${file_list}"
 }
+
 help_msg () {
 	echo -e "\e[33mThis reads the names of .wav files in a designated directory or directories,"
 	echo -e "and creates a .txt file with the same name."
@@ -71,6 +74,7 @@ help_msg () {
 	echo "x" | select opt in "${options[@]}"; do break;done;  # $REPLY";;
 	export PS3=$'\e[91mPlease \e[5menter \e[25myour choice:\e[0m '
 }
+
 interactive(){
     echo -e "\e[31m |~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|"
     echo -e " | --- Welcome to textize! --- |"
