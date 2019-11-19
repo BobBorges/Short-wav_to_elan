@@ -70,65 +70,65 @@
 get_1dir_txt_dest(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe destination for your text files."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
+	echo -e "\e[0m"	
 	read onedir_txt_dest
 }
 
 get_1dir_wav_dest(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe destination for your wav files."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"	
+	echo -e "\e[0m"	
 	read onedir_wav_dest
 }
 
 get_one_nest_src_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to operate on."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"
+	echo -e "\e[0m"
 	read working_src_dir
 }
 
 get_multi_nest_src_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing the directories you want to operate on."
-	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
+	echo -e "\e[0m"
 	read working_src_dir_list
 }
 
 get_txt_src_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to move .txt files from."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"
+	echo -e "\e[0m"
 	read onedir_txt_src
 }
 
 get_wav_src_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25mthe directory you want to move .wav files from."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"
+	echo -e "\e[0m"
 	read onedir_wav_src
 }
 
 get_one_nest_dest_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma parent directory, where .wav and .txt files will be nested."
-	echo -e "\e[34mHINT: Use an absolute path.\e[0m"
+	echo -e "\e[0m"
 	read parent_dest_dir
 }
 
 get_multi_nest_dest_dir(){
 	echo ""
 	echo -e "\e[91mPlease \e[5menter \e[25ma .txt file listing parent directories, where .wav and .txt files will be nested."
-	echo -e "\e[34mHINT: Use absoute paths to the file AND in the file.\e[0m"
+	echo -e "\e[0m"
 	read parent_dest_dir_list
 }
 
 get_stray_files_dest_dir(){
 	echo ""
 	echo -e "\e[91mWhere to you want to move stray files? \e[5mEnter\e[25m destination directory."
-	echo -e "\e[34mHINT 1: Use an absolute path."
-	echo -e "\e[94mHINT 2: Stray files are files with names that don't match an existing nested directory."
-	echo -e "\e[34mHINT 3: Just press enter to leave stray files where they are.\e[0m"
+	echo -e "\e[94mHINT 1: Stray files are files with names that don't match an existing nested directory."
+	echo -e "\e[34mHINT 2: Just press enter to leave stray files where they are.\e[0m"
+    echo -e ""
 	read stray_files_dest	
 }
 
@@ -194,54 +194,54 @@ nested_dest_one_or_more(){
 
 mv_from_nested(){
 	shopt -s nullglob
-	for d in $1/*/ ;do				#input parameter $1 will be src
-		dir_name=$(basename $d)
-		wav="$dir_name/$dir_name.wav"
-		txt="$dir_name/$dir_name.txt"
-		echo "--- moving $wav to $onedir_wav_dest ---"
-		mv "$d/$dir_name.wav" $onedir_wav_dest
-		echo "--- moving $txt to $onedir_txt_dest ---"
-		mv "$d/$dir_name.txt" $onedir_txt_dest
+	for d in "${1}"/*/ ;do				#input parameter $1 will be src
+		dir_name=$(basename "${d}")
+		wav="${dir_name}/$dir_name.wav"
+		txt="${dir_name}/$dir_name.txt"
+		echo "--- moving ${wav} to ${onedir_wav_dest} ---"
+		mv "${d}/$dir_name.wav" "${onedir_wav_dest}"
+		echo "--- moving ${txt} to ${onedir_txt_dest} ---"
+		mv "${d}/$dir_name.txt" "${onedir_txt_dest}"
 	done
 }	
 
 mv_from_1dir(){
 	shopt -s nullglob
-	for d in $1/*/ ; do				#input parameter $1 will be dest
-		dir_name=$(basename $d)
-		if [ -f $onedir_wav_src/$dir_name.wav ]; then
-			echo "~~~ Moving $onedir_wav_src/$dir_name.wav to  $d. ~~~"
-			mv $onedir_wav_src/$dir_name.wav $d
+	for d in "${1}"/*/ ; do				#input parameter $1 will be dest
+		dir_name=$(basename "${d}")
+		if [ -f "${onedir_wav_src}/$dir_name.wav" ]; then
+			echo "~~~ Moving ${onedir_wav_src}/$dir_name.wav to  ${d}. ~~~"
+			mv "${onedir_wav_src}"/$dir_name.wav "${d}"
 		else
-			echo -e "\e[91m~~~ There is no corresponding .wav file found for the $d directory. ~~~"
+			echo -e "\e[91m~~~ There is no corresponding .wav file found for the ${d} directory. ~~~"
 		fi
-		if [ -f $onedir_wav_src/$dir_name.txt ]; then
-			echo "~~~ Moving $onedir_wav_src/$dir_name.txt to $d. ~~~"
-			mv $onedir_wav_src/$dir_name.txt $d
+		if [ -f "${onedir_wav_src}/$dir_name.txt" ]; then
+			echo "~~~ Moving ${onedir_wav_src}/$dir_name.txt to "${d}". ~~~"
+			mv "${onedir_wav_src}/$dir_name.txt" "${d}"
 		else
-			echo -e "\e[91m~~~ There is no corresponding .txt file found for the $d directory. ~~~"
+			echo -e "\e[91m~~~ There is no corresponding .txt file found for the ${d} directory. ~~~"
 		fi
 	done
 }
 
 address_stray_files(){
-	if [ -z ${stray_files_dest} ]; then
+	if [ -z "${stray_files_dest}" ]; then
 		shopt -s nullglob
-		for wav in $onedir_wav_src/*.wav; do
+		for wav in "${onedir_wav_src}"/*.wav; do
 			echo -e "\e[33m~~~ $wav was left in the source directory because no destination folder was found. ~~~"
 		done 
-		for txt in $onedir_txt_src/*.txt; do
+		for txt in "${onedir_txt_src}"/*.txt; do
 			echo -e "\e[33m~~~ $txt was left in the source directory because no destination folder was found. ~~~"
 		done 		
 	else
 		shopt -s nullglob
-		for wav in $onedir_wav_src/*.wav; do
-			echo "~~~ Moving $wav to the stray files directory, $stray_files_dest. ~~~"
-			mv $wav $stray_files_dest
+		for wav in "${onedir_wav_src}"/*.wav; do
+			echo "~~~ Moving $wav to the stray files directory, "${stray_files_dest}". ~~~"
+			mv "${wav}" "${stray_files_dest}"
 		done
-		for txt in $onedir_txt_src/*.txt; do
-			echo "~~~ Moving $txt to the stray files directory, $stray_files_dest. ~~~"
-			mv $txt $stray_files_dest
+		for txt in "${onedir_txt_src}"/*.txt; do
+			echo "~~~ Moving $txt to the stray files directory, "${stray_files_dest}". ~~~"
+			mv "${txt}" "${stray_files_dest}"
 		done
 
 	fi
@@ -251,12 +251,12 @@ mv_to_1dir(){
 	nested_src_one_or_more
 	get_1dir_wav_dest
 	get_1dir_txt_dest
-	if [ -z ${working_src_dir} ]; then
+	if [ -z "${working_src_dir}" ]; then
 		while read line; do
-			mv_from_nested $line 
-		done < $working_src_dir_list
+			mv_from_nested "${line}" 
+		done < "${working_src_dir_list}"
 	else
-		mv_from_nested $working_src_dir
+		mv_from_nested "${working_src_dir}"
 	fi
 }
 
@@ -265,12 +265,12 @@ mv_to_nested(){
 	get_wav_src_dir
 	get_txt_src_dir
 	get_stray_files_dest_dir
-	if [ -z ${parent_dest_dir} ]; then
+	if [ -z "${parent_dest_dir}" ]; then
 		while read line; do
-			mv_from_1dir $line
-		done < $parent_dest_dir_list
+			mv_from_1dir "${line}"
+		done < "${parent_dest_dir_list}"
 	else
-		mv_from_1dir $parent_dest_dir
+		mv_from_1dir "${parent_dest_dir}"
 	fi
 	address_stray_files
 }
@@ -316,15 +316,15 @@ help_msg(){
 	echo -e "directory structure already exists and allows the user to define what happens to"
 	echo -e "files that cannot be palced."
 	echo -e ""
-	echo -e "If tou choose to operate on one directory (Option 1), you must enter an"
-	echo -e "absolute path to that directory. Sommething like:\e[0m"
+	echo -e "If tou choose to operate on one directory (Option 1), you must enter a"
+	echo -e "path to that directory. Sommething like:\e[0m"
 	echo -e ""
 	echo -e "    /home/user/target_directory"
 	echo -e ""
 	echo -e "\e[33mIf you choose to operate on multiple directories, you must provide"
-	echo -e "a .txt file as input. An absolute path should be entered to that file, and"
+	echo -e "a .txt file as input. A path should be entered to that file, and"
 	echo -e "its contents should be a line by line list of directories to be operated"
-	echo -e "on by the script, also in the form of absolute paths."
+	echo -e "on by the script."
 	echo -e ""
 	echo -e "OK?"
 	echo -e 
@@ -404,7 +404,6 @@ usage(){
     echo "  -d | --de-nest          de-nest"
     echo "  -l | --list             pass nested directories from .txt file"
     echo ""
-    echo "HINT: use absolute paths."
 }
 
 operation=
@@ -438,10 +437,10 @@ for arg in "$@"; do
             shift
             ;;
         -l|--list)
-            if [ $operation == "nest" ] && [[ -f $2 ]];then
+            if [ $operation == "nest" ] && [[ -f "${2}" ]];then
                 parent_dest_dir_list=$2
-            elif [ $operation == "denest" ] && [[ -f $2 ]];then
-                working_src_dir_list=$2 
+            elif [ $operation == "denest" ] && [[ -f "${2}" ]];then
+                working_src_dir_list="${2}" 
             else
                 echo "-l takes a file argument. Please try again"
             fi
@@ -455,42 +454,42 @@ for arg in "$@"; do
     esac
 done
 
-if (( ${#other_args[@]} >= 2 )) ;then
+if (( "${#other_args[@]}" >= 2 )) ;then
     if [ "$operation" ]; then
         echo "$operation"
         if [ $operation == "nest" ]; then
-            if [ "$parent_dest_dir_list" ]; then
-                onedir_wav_src=${other_args[0]}
-                onedir_txt_src=${other_args[1]}
+            if [ "${parent_dest_dir_list}" ]; then
+                onedir_wav_src="${other_args[0]}"
+                onedir_txt_src="${other_args[1]}"
                 if [ "${other_args[2]}" ]; then
-                    stray_files_dest=${other_args[2]}
+                    stray_files_dest="${other_args[2]}"
                 fi
                 while read line; do
-                    mv_from_1dir $line
-                done < $parent_dest_dir_list
+                    mv_from_1dir "${line}"
+                done < "${parent_dest_dir_list}"
                 address_stray_files
             else
-                parent_dest_dir=${other_args[0]}
-                onedir_wav_src=${other_args[1]}
-                onedir_txt_src=${other_args[2]}
+                parent_dest_dir="${other_args[0]}"
+                onedir_wav_src="${other_args[1]}"
+                onedir_txt_src="${other_args[2]}"
                 if [ "${other_args[3]}" ]; then
-                    stray_files_dest=${other_args[3]}
+                    stray_files_dest="${other_args[3]}"
                 fi
-                mv_from_1dir $parent_dest_dir
+                mv_from_1dir "${parent_dest_dir}"
                 address_stray_files
             fi
         else # de-nest
-            if [ "$working_src_dir_list" ]; then
-                onedir_wav_dest=${other_args[0]}
-                onedir_txt_dest=${other_args[1]}
+            if [ "${working_src_dir_list}" ]; then
+                onedir_wav_dest="${other_args[0]}"
+                onedir_txt_dest="${other_args[1]}"
                 while read line; do
-                    mv_from_nested $line
-                done < $working_src_dir_list
+                    mv_from_nested "${line}"
+                done < "${working_src_dir_list}"
             else        
-                working_src_dir=${other_args[0]}
-                onedir_wav_dest=${other_args[1]}
-                onedir_txt_dest=${other_args[2]}
-                mv_from_nested $working_src_dir
+                working_src_dir="${other_args[0]}"
+                onedir_wav_dest="${other_args[1]}"
+                onedir_txt_dest="${other_args[2]}"
+                mv_from_nested "${working_src_dir}"
             fi
         fi
     else
