@@ -13,6 +13,8 @@ This is a set of Bash scripts for automating work relating to media and text fil
 
 ## Description of scripts
 
+### Basic usage
+
 Once you have identified an operation that you want to perform and your files / directories are in the approproate structure to run the script that perfoms that operation, simply follow these steps:
 
 * Open terminal
@@ -42,6 +44,28 @@ Suggestion: Don't write file lists by hand. Instead use something like:
 
 The scripts that create `.eaf` files require the following packages yo be installed: `HTML Tidy` and `SoX`
 
+
+### A note about file paths
+
+Paths to files and directories are relative to the location where you initiate the script. If you're not sure how relative paths work, you can use absolute paths. For example:
+
+        /home/user/some_dir/target_directory
+
+Spaces in file names and directory names should be avioded, especially in the end-node directories that form the basis for creating/targeting files. But if your paths have unavoidable directories or file names that contain spaces, one should use extra care when issuing commands. In command line mode these paths should be encased in double quotes.
+
+        ./wav_make_txt.sh "target directory"
+
+But in interactive mode, enter path without quotes. When paths are passed to the script via a text file, the paths in the file should not be encased in quotes.
+
+
+### Advanced usage
+
+Scripts can be initiated from outside the location where it is saved. For example:
+
+        user@machine:~/data_directory/data_batch_1 $ ~/Short_wav-to-elan/wav_make_txt.sh .
+
+However it's probably more efficient, in the event that the scripts will be used more often, to add the script directory to the PATH environment variable, or move the scripts directory to a directory that's already in the environment. Another option would be to set a bash alias for each script, which would also allow calling the scripts from less cumbersome names that the user defines.
+
 ### 1. wav_make_txt.sh
 
 This reads the names of `.wav` files in a designated directory or directories, and creates a `.txt` file with the same name.
@@ -57,8 +81,6 @@ This reads the names of `.wav` files in a designated directory or directories, a
           -i | --interactive      start program in interactive mode
           -l | --list             pass target directories from .txt file
 
-        HINT: use absolute paths.
-
 ### 2. populate_txts.sh
 
 This is a script to read lines in a text file (`transcriptions.txt`) and write the line to to a separate `.txt` file in a specified directory. There is no specific checking of the file names in the destination directory or the lines of text in the transcriptions file. The script operates entirely on the assumption that the order of lines in the transcritions file is exactly the same as the files in the destination directory. The transcriptions file need not be in the destination directory, but if it is, it MUST be named `transcriptions.txt`.
@@ -71,9 +93,6 @@ This is a script to read lines in a text file (`transcriptions.txt`) and write t
         Options
           -h | --help             display this message and exit
           -i | --interactive      start program in interactive mode
-
-        HINT: use absolute paths.
-
 
 ### 3. folderize_wav_files.sh
 
@@ -90,8 +109,6 @@ This is a script to put `.wav` files within a specified directory or directories
           -i | --interactive      start program in interactive mode
           -l | --list             pass target directories from .txt file
 
-        HINT: use absolute paths.
-
 ### 4. elanize.sh
 
 This script will check sub-directories within a specified directory or direcories for a `.wav` file, then it will create an Elan project associated with that `.wav` file in the same sub-directory. The `.eaf` file will have one tier and an anotation that occupies the entire durration of the `.wav` file. If there is a `.txt` file in the directory with the same name as the `.wav` file, the script will assume it is transcription and add the contents of the `.txt` to the annotation.
@@ -106,9 +123,6 @@ This script will check sub-directories within a specified directory or direcorie
           -h | --help             display this message and exit
           -i | --interactive      start program in interactive mode
           -l | --list             pass target directories from .txt file
-
-        HINT: use absolute paths.
-
 
 ### 5. folder-and-elanize_wav_files.sh
 
@@ -125,9 +139,6 @@ This script does the job of (3) and (4) in a single run.
           -i | --interactive      start program in interactive mode
           -l | --list             pass target directories from .txt file
 
-        HINT: use absolute paths.
-
-
 ### 6. eaf_extract_txt.sh
 
 This script iterates through subdirectories of a specified directory or directories, where it is assumed ELAN projects (one or more media files, `.eaf` and `.pfsx` files) are stored. The script assumes there is one annotation on one tier, and extracts the annotation value, then adds it to a `.txt` file.
@@ -143,9 +154,6 @@ This script iterates through subdirectories of a specified directory or director
           -h | --help             display this message and exit
           -i | --interactive      start program in interactive mode
           -l | --list             pass target directories from .txt file
-
-        HINT: use absolute paths.
-
 
 ### 7. wav-txt_to-from_nested.sh
 
@@ -199,7 +207,6 @@ and
           -d | --de-nest          de-nest
           -l | --list             pass nested directories from .txt file
 
-        HINT: use absolute paths.
 
 
 
