@@ -1,5 +1,214 @@
 # Test data for WoGEL
 
-Some tutorial will go here for the WoGEL meeting...
+* Robert Borges -- 2019-11-20
 
-stay tuned
+This document describes an annex to the [Short-wav_to_elan](https://github.com/BobBorges/Short-wav_to_elan) tool set and can be found [here](https://github.com/BobBorges/Short-wav_to_elan/blob/master/wogel/README.mkd). The annex is a directory that contains a small data set to be used for learning how the tools work and testnig them out before you touch any real data. Speaking of touching real data, keep periodic backups of your data, especially before sicking some tools you got off the internet on it.
+
+## Introduction
+
+Here, you have a basic, small data set that is contained within a directory structure optimized to test tools. The test data and directories are organized such that one can progress through the tool set sequentially. It is assumed that the following prerequisites are met:
+
+    * Operating system that supports Bash shell scripts;
+    * basic understanding of the terminal: Commands such as `cd`, `cd ..`, `mkdir` and `touch`; file paths and directory structure;
+    * installed recent version of [elan](https://tla.mpi.nl/tools/tla-tools/elan/);
+    * basic understanding of what elan does and how elan documents are used in linguistics
+    * installed Bash (only for windows users, default installed on Mac & Linux) and packages `SoX` and `HTML Tidy`
+    * recommended: `git`
+
+### Tool Design
+
+It is also assumed that Elan (or at least Elan-like system) provides a desirable way to store and analyze langauge data. Development of the tools were inspired by (a) the desire to manage many short recordings consistently (as with longer recordings) in Elan (b) the need to add or extract transcriptions in the form of `.txt` files to/from Elan project, and (c) the need to move `.wav` and `.txt` files from typically nested Elan project directory structure to a non-nested format and back.
+
+As such, the tools are specifically designed to handle data sets with multiple "short" media files. In this case "short" means roughly signle words, or single utternaces, which would typically be contained in a single Elan annotation.
+
+### About the Data
+Audio files are excerps from the Kaszubski Fiszki (https://www.fiszki.pl/jezyki/kaszubski/) accompanying audio. Transcriptions come directly from the fiszki (card numbers following `fisz_` in the file name).
+
+## Let's get started...
+
+Here I will walk you through acquiring the tools and trying them out on the test data set. I'll add some periodic screenshots from my file manager to illustrate what's going on.
+
+### Clone the Github Repo
+
+The very first thing you should do is decide where you want the tools to live on your machine. I want mine to live on my desktop, so I'm going to `clone` the toolset there. So, I'm going to open up a terminal and you should see something like:
+
+        user@machine:~$
+
+Enter the following after the `$`
+
+        cd Desktop
+
+The now your prompt should look lik this:
+
+        user@machine:~/Desktop$
+
+Now you're in the directory where you want the tools to live, so just go ahead and enter
+
+        git clone https://github.com/BobBorges/Short-wav_to_elan.git
+
+That's it. Now you should have a folder on the desktop called `Short-wav_to_elan` on the desktop (or wherever you cloned) full of the tools and test data. You're ready for the next step.
+
+![bad link](screenshots/clone.png)
+
+But if you didn't install `git`, or you're allergic to the terminal (you're gonna have a bad time) you can also make the `shortWav_tools` folder in your GUI file manager, download a `.zip` of the repo, and unzip it into the `shortWav_tools` directory. It gets you the tools all the same, but it's much less efficient.
+
+### Try out the first script -- make text files from media files
+
+Take a look in the `wogel/elan_1` directory. There are four `.wav` files. In this particular instance, we're lucky - each file is also already transcribed in the `transcriptions.txt` folder. Half the work is already done, but for consistency with all our other projects, and to meet the demands of our hypothetical funding agency, we need to archive all data in Elan projects. Typically, we would have to...
+
+* create a new folder within `elan_1` for each `.wav` file
+* move the `.wav` file into the directory
+* fire up Elan
+* start a new project
+* associate the media files
+* save the project as an `.eaf` file in the new sub directory
+* create a tier in the new Elan project
+* copy paste the transcription to a new annotation on the tier
+
+...for each file. Ugh, how tedious. And how long would that all take, 10 minutes? Maybe if you're quick. Now imagine you have 100 or 1000 or more files like these to do. That's a recipe for not processing these files consistently with other data, or not doing it at all. These tools will get you there with little effort and much less time! In the test set, we've got 2x4 media files, but for each step, imagine you have that 100 or 1000 or more files to get through, and you'll see the benefit of doing using these tools.
+
+Our first script will make a new `.txt` file based on the name of each `.wav` in `elan_1`. We're doing this so we can later add transcription to the text file, move it into the subfolder and then populate it into a transcription tier in the Elan `.eaf` file.
+
+So `cd` into the `wogel` directory. For the demo, we'll call all our scripts from here, which means all paths we need to pass the scripts as arguments will be relative to the `wogel` directory. Your prompt should be looking like this:
+
+        user@machine:~Desktop/Short-wav_to_elan$
+
+Good. We're going to call up the first script `wav_make_txt.sh`. With no arguments it will return the command-line usage summary.
+
+        ../wav_make_txt.sh
+
+The `../` tells the terminal that the script is located in the `wogel` parent directory. The usage summary tells us that we need to pass one argument to the script, namely the directory full of `.wav` files that also need corresponding `.txt` files.
+
+![bad link](screenshots/script_1-1.png)
+
+So you could run
+
+        ../wav_make_txt.sh elan_1
+
+where `elan_1` is understood to be the directory (starting out from `wogel`) containing these files. Other options are to pass a file listing directories to pass by using the `-l` (we'll come back to this option later on), or to start the script in interactive mode with `-i`.
+
+Go ahead ans start in interactive mode:
+
+        ../wav_make_txt.sh -i
+
+You'll be asked if you want to operate on a single directory or multiple directories. Chose a single directory and enter `elan_1` as the path. Now your `elan_1` directory should have four more `.txt` files in it.
+
+![bad link](screenshots/script_1-2.png)
+
+### Populate the new text files
+
+The next tool -- `populate_txts.sh` -- works the same way. Run it with no arguments or `-h` to see the suage options. 
+
+This one will read each line from the `transcriptions.txt` file and copy it to the newly created `.txt` files in `elan_1`. The script doesn't provide any means to order or sort -- lines are read from the file one at a time from the beginning and add them to the new files one at a time in the default sort order of the system. Make sure to wrangle data like this before using the script, or modify the script to better suit the realities of your data set. For the test set, though, everything is set and ready to go. This time we'll use the command line option. The first argument is the target directory and the second argument is the file containing the transcriptions. The transcriptions file does not need to be in the target directory, and can be named anything when it's outside the target. Inside the target directory, however the file should be named `transcriptions.txt`, otherwise the script will assume it is a `.txt` file that should accept one line of transcription.
+
+        ../populate_txts.sh elan_1 elan_1/transcriptions.txt
+
+Now if you open up one of the texts, you should see that the text has been populated from the `transcriptions.txt` file.
+
+![bad link](screenshots/script_2.png)
+
+### Nest `.wav` & `.txt` files and generate an `.eaf` for each pair
+
+The next steps on our journey would be to (a) create a new subdirectory for each pair of files and move the files into it, and (b) create Elan projects (an `.eaf` file) for each media/text pair. Operation (a) can be done with `folderize_wav_files.sh` and (b) with `elanize.sh`. Alternatively, we will use `folder-and-elanize_wav_files.sh`, which will complete (a) and (b) at the same time. 
+
+It should be noted that we started off in a luxry position, having our media transcribed in a machine readable format. These three scripts will handle pairs of `.wav` and `.txt` files, but if no `.txt` if present, they will procede nesting the `.wav` files and creating `.eaf` files with an empty transctiption tier.
+
+Before we procede, take a look in the `elan_2` directory and notice that there is a similar data set as the `elan_1` directory. So lets get them both in a new Elan suit at once. Notice the file `nested_dirs_list.txt` contains a list of two directories, `elan_1` and `elan_2`. We can pass that file to the script as an argument. If you like, you can check the options of `folder-and-elanize_wav_files.sh` with the `-h` option to see how it works from the command line (use the `-l` option), or just go ahead and start it in interactive mode.
+
+        ../folder-and-elanize_wav_files.sh -i
+
+Select the `Work on multiple directories` option, and then pass the `nested_dirs_list.txt` file to the script.
+
+![bad link](screenshots/script_3-1.png)
+
+You should now have directories inside `elan_1` and `elan_2`, each with a `.wav`, `.txt`, and a `.eaf`. Open one of the `.eaf` files with elan, and it should work and look like a regular elan project. Note: opening the eaf with Elan will create another file with `.pfsx` extention, which it normal behavior.
+
+![bad link](screenshots/script-3-2.png)
+
+### Extract text from `.eaf`
+
+So let's take a step back and consider the possibility that we hadn't started from the luxurious position of having transcriptions from the beginning. For the purpose of the demo, go ahead and delete all the `.txt` files from subdirectories of `elan_1`.
+
+![bad link](screenshots/script_4-1.png)
+
+This simulates a situation where we didn't start with transcription, but rather went through with the `elanize` step and then transcribed the data manually in Elan.
+
+For our analytical purposes, we will need a `.txt` file of the transcriptions, but since we made them  in Elan, we can either export text files from within the Elan GUI, which will either produce asingle file like the `transcriptions.txt` file we started with from multiple Elan projects at once, or a single file for each `.eaf`, but `.txt` files will need to be exported one at a time. Use `eaf_extract_txt.sh` to extract transcriptions to a `.txt` file -- either to create files fresh or overwrite files after updating transcriptions in Elan.
+
+The script assumes one tier with one annotation. It doesn't matter what the name of the tier is. So go ahead and run the script on `elan_`...
+
+        ../eaf_extract_txt.sh elan_1
+
+...to get your transcriptions in `.txt` format back.
+
+![bad link](screenshots/script_4-2.png)
+
+Like the others, you can pass multiple directories containing Elan projects with `-l` or run the script in interactive mode with `-i`.
+
+### Nest and de-nest `.wav` and `.txt`
+
+While the nested directories like those in `elan_1` and `elan_2` are convenient enough and rather common for handling spoken-language data, it happens occasionally that `.wav` files and transcription `.txt` files in another location for analysis. So lets de-nest the data with `wav-txt_to-from_nested.sh.` Start the script up in interactive mode.
+
+        ../wav-txt_to-from_nested.sh -i
+
+At the first prompt, chose
+
+        Move files from a nested directory structure to a non-nested directory structure
+Then
+
+        Move from MULTIPLE nested directories
+
+Then you'll be prompted to enter a list of directories to de-nest. Enter
+
+        nested_dirs_list.txt
+
+Then you'll be prompted to enter a destination directory for `.wav` files and a destination for `.txt` files. Enter
+
+        wav_files
+
+and
+
+        txt_files
+
+![bad link](screenshots/script_5-1.png)
+
+After you enter `txt_file` the `.wav` and `.txt` files will be moved from the nested structure to the de-nested destination directories. Easy, right?
+
+![bad link](screenshots/script_5-2.png)
+
+Now you can run whatever analysis you need to run. Ok, now that that's out of the way, let's put those files back in the nested directories with the `.eaf` files, with the command-line mode this time.
+
+The command-line mode is slightly more complicated than the other tools -- it takes four mandatory arguments and two optional ones. After calling the script, the user needs to choose `-d` or `-n`, de-nest or nest, respectively. We're going to use `-n` because we'll be "nesting" our files. The next argument is the nested destination. If there are multiple parent directories, precede the directories list with an `-l`. The next two arguments are the non-nested source directories for `.wav` and `.txt` files. There is a final optional argument, which is a path for handling stray files, i.e. files that do not match any of the "home" directories in the nested structure. If this argument is not set "stray files" will be left where they are. If you explored the data set before de-nesting, you would have noticed there is a stray file in each of the non-nested directories, so we'll send them to the `stray_files` directory.
+
+        ../wav-txt_to-from_nested.sh -n -l nested_dirs_list.txt wav_files txt_files stray_files
+
+Now all the `.wav` and `.txt` files should be back in their nested directories and the two stray files in the `stray_files` directory.
+
+![bad link](screenshots/script_5-4.png)
+
+If you were so inclined, you could rename the stray files directory...
+
+        mv stray_files elan_3
+
+...start the tutorial over processing those stray files.
+
+The argument syntax for denesting is the same, but with the sources and destinations swapped.
+
+        ../wav-txt_to-from_nested.sh -d -l nested_dirs_list.txt wav_files txt_files
+
+And there is no optional `stray_files` argument for de-nesting.
+
+## Last words
+
+That's it, go out and use the tools.
+
+Hint: create bash aliases for the scripts you want to use and call them up from any location.
+
+
+
+
+
+
+
+
+
