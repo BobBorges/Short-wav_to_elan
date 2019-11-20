@@ -209,7 +209,6 @@ mv_from_1dir(){
 	shopt -s nullglob
 	for d in "${1}"/*/ ; do				#input parameter $1 will be dest
 		dir_name=$(basename "${d}")
-        echo $dir_name
 		if [ -f "${onedir_wav_src}"/$dir_name.wav ]; then
 			echo "~~~ Moving ${onedir_wav_src}/$dir_name.wav to ${d}. ~~~"
 			mv "${onedir_wav_src}"/$dir_name.wav "${d}"
@@ -460,16 +459,12 @@ if (( "${#other_args[@]}" >= 2 )) ;then
         echo "$operation"
         if [ $operation == "nest" ]; then
             if [ "${parent_dest_dir_list}" ]; then
-                echo $parent_dest_dir_list
                 onedir_wav_src="${other_args[0]}"
-                echo "${other_args[0]}"
                 onedir_txt_src="${other_args[1]}"
-                echo "${other_args[1]}"
                 if [ "${other_args[2]}" ]; then
                     stray_files_dest="${other_args[2]}"
                 fi
                 while read line; do
-                    echo $line
                     mv_from_1dir "${line}"
                 done < "${parent_dest_dir_list}"
                 address_stray_files
