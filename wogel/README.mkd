@@ -8,12 +8,12 @@ This document describes an annex to the [Short-wav_to_elan](https://github.com/B
 
 Here, you have a basic, small data set that is contained within a directory structure optimized to test tools. The test data and directories are organized such that one can progress through the tool set sequentially. It is assumed that the following prerequisites are met:
 
-    * Operating system that supports Bash shell scripts;
-    * basic understanding of the terminal: Commands such as `cd`, `cd ..`, `mkdir` and `touch`; file paths and directory structure;
-    * installed recent version of [elan](https://tla.mpi.nl/tools/tla-tools/elan/);
-    * basic understanding of what elan does and how elan documents are used in linguistics
-    * installed Bash (only for windows users, default installed on Mac & Linux) and packages `SoX` and `HTML Tidy`
-    * recommended: `git`
+* Operating system that supports Bash shell scripts;
+* basic understanding of the terminal: Commands such as `cd`, `cd ..`, `mkdir` and `touch`; file paths and directory structure;
+* installed recent version of [elan](https://tla.mpi.nl/tools/tla-tools/elan/);
+* basic understanding of what elan does and how elan documents are used in linguistics
+* installed Bash (only for windows users, default installed on Mac & Linux) and packages `SoX` and `HTML Tidy`
+* recommended: `git`
 
 ### Tool Design
 
